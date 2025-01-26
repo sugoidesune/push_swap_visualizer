@@ -36,5 +36,4 @@ public:
   ~Gui();
 
   void loop();
-  void swapA();
 };

@@ -91,6 +91,9 @@ void Gui::_updateControls() {
   ImGui::Begin("Values");
   ImGui::Text("Values to generate");
   ImGui::InputInt("Count", reinterpret_cast<int*>(&this->generateNumberSize)); // Corrected data type
+  if (this->generateNumberSize < 0) {
+    this->generateNumberSize = 0;
+  }
 
   if (ImGui::Button("Shuffle")) {
     unsigned int size = static_cast<unsigned int>(this->generateNumberSize);

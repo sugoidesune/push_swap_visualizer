@@ -1,3 +1,5 @@
+find_package(UDev REQUIRED)
+
 find_path(UDEV_INCLUDE_DIR NAMES libudev.h PATHS /usr/include /usr/local/include)
 find_library(UDEV_LIBRARY NAMES udev libudev PATHS /usr/lib /usr/local/lib)
 

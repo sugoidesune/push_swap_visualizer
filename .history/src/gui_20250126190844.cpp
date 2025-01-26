@@ -56,6 +56,7 @@ void Gui::_updateBars() {
 }
 
 void Gui::_updateControls() {
+void Gui::_updateControls() {
   ImGui::Begin("Controls");
   ImGui::SliderInt("Speed", &this->speed, 1, 500, "%i/s");
 
@@ -90,7 +91,10 @@ void Gui::_updateControls() {
 
   ImGui::Begin("Values");
   ImGui::Text("Values to generate");
-  ImGui::InputInt("Count", reinterpret_cast<int*>(&this->generateNumberSize)); // Corrected data type
+  ImGui::InputInt("Count", &this->generateNumberSize);
+  if (this->generateNumberSize < 0) {
+    this->generateNumberSize = 0;
+  }
 
   if (ImGui::Button("Shuffle")) {
     unsigned int size = static_cast<unsigned int>(this->generateNumberSize);
@@ -135,7 +139,10 @@ void Gui::_updateControls() {
 }
 
 void Gui::_drawBars() {
-  for (const auto &shape : this->bars) {
+  for (const auto &shape : this->barsA) {
+    this->_window.draw(shape);
+  }
+  for (const auto &shape : this->barsB) {
     this->_window.draw(shape);
   }
 }
@@ -190,6 +197,10 @@ void Gui::loop() {
     this->_updateControls();
 
     this->_animateQueue(stepClock);
+
+    if (ImGui::Button("SWAP A")) {
+        this->swapA();
+    }
 
     _window.clear();
 

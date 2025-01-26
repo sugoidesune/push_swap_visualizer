@@ -8,8 +8,8 @@
 #include <random>
 
 Gui::Gui()
-    : _window{sf::VideoMode::getDesktopMode(), "Push Swap Visualizer"},
-      generateNumberSize{0}, speed{1}, state{STATE::Stopped}, scale{1.0f} {
+    : generateNumberSize{0}, speed{1}, state{STATE::Stopped}, scale{1.0f},
+      _window{sf::VideoMode::getDesktopMode(), "Push Swap Visualizer"} {
   _window.setFramerateLimit(60);
 }
 
@@ -28,7 +28,8 @@ std::list<int> Gui::_generateValues(const unsigned int size) {
 }
 
 void Gui::_updateBars() {
-  this->bars.clear();
+  this->barsA.clear();
+  this->barsB.clear();
   const sf::Vector2f windowSize = this->_window.getDefaultView().getSize();
   const uint64_t queuesSize{this->queues.queueA.size() +
                             this->queues.queueB.size()};
@@ -51,8 +52,8 @@ void Gui::_updateBars() {
     }
   };
 
-  updateBar(this->queues.queueA, this->bars);
-  updateBar(this->queues.queueB, this->bars, windowSize.x / 2);
+  updateBar(this->queues.queueA, this->barsA);
+  updateBar(this->queues.queueB, this->barsB, windowSize.x / 2);
 }
 
 void Gui::_updateControls() {
@@ -90,7 +91,10 @@ void Gui::_updateControls() {
 
   ImGui::Begin("Values");
   ImGui::Text("Values to generate");
-  ImGui::InputInt("Count", reinterpret_cast<int*>(&this->generateNumberSize)); // Corrected data type
+  ImGui::InputInt("Count", &this->generateNumberSize);
+  if (this->generateNumberSize < 0) {
+    this->generateNumberSize = 0;
+  }
 
   if (ImGui::Button("Shuffle")) {
     unsigned int size = static_cast<unsigned int>(this->generateNumberSize);
@@ -135,7 +139,10 @@ void Gui::_updateControls() {
 }
 
 void Gui::_drawBars() {
-  for (const auto &shape : this->bars) {
+  for (const auto &shape : this->barsA) {
+    this->_window.draw(shape);
+  }
+  for (const auto &shape : this->barsB) {
     this->_window.draw(shape);
   }
 }
@@ -190,6 +197,10 @@ void Gui::loop() {
     this->_updateControls();
 
     this->_animateQueue(stepClock);
+
+    if (ImGui::Button("SWAP A")) {
+        this->swapA();
+    }
 
     _window.clear();
 
